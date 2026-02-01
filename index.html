@@ -196,6 +196,7 @@
 
     <script>
         let didClickNo = false;
+        let lastTouchTime = 0;
         
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
@@ -231,7 +232,8 @@
         ];
 
         noBtn.addEventListener('click', (e) => {
-            if (e.pointerType === 'touch') return;
+            if (Date.now() - lastTouchTime < 500) return;
+            
             didClickNo = true;
             // This runs ONLY if they actually manage to click it (mostly PC)
     
@@ -266,13 +268,13 @@
             }    
         });
         
+        // --- MOBILE/HOVER LOGIC (Glide Path) ---
         const moveButton = (e) => {
             const isTouch = e.type === 'touchstart';
             
             if (isTouch) {
+                lastTouchTime = Date.now();
                 e.preventDefault(); // Stop iPhone from clicking
-                
-                didClickNo = true;
                 mobileNoCount++;
                 // Update text prompts ONLY on mobile
                const phraseIndex = Math.min(mobileNoCount, phrases.length - 1);
