@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>The Gliding No</title>
     <style>
+        
         body {
             display: flex;
             flex-direction: column;
@@ -14,6 +15,89 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #fce4ec; /* Soft pink background */
             overflow: hidden
+        }
+
+        #success-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fce4ec;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            text-align: center;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .success-message {
+            font-family: "Papyrus", "ITC Papyrus", "Comic Sans MS", cursive;
+            font-size: 2rem;
+            color: #880e4f;
+            margin-top: 30px;
+            padding: 0 20px;
+            line-height: 1.5;
+        }
+
+        .image-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .image-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #fd008b;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            box-shadow: 0 0 15px #ff0095;
+            animation: sparkleAnim 1.5s infinite;
+        } 
+
+        @keyframes sparkleAnim {
+            0% {
+                transform: scale(0.5);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(0.5);
+                opacity: 0.8;
+            }
+        }
+
+        #mainImage {
+            width: 250px;
+            height: 250px;
+            object-fit: cover; /* Adjust this to make the GIF bigger or smaller */ 
+            border-radius: 75%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #successImage {
+            width: 250px;
+            height: 250px;
+            object-fit: cover; /* Adjust this to make the GIF bigger or smaller */ 
+            border-radius: 75%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         /* The container for our waving letters */
@@ -63,10 +147,11 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        #yesBtn { background-color: #4CAF50; 
-                  color: white; 
-                  position: absolute; 
-                  right: calc(50% + 60px);
+        #yesBtn {   background-color: #4CAF50; 
+                    color: white; 
+                    margin-right: 150px;
+                    transition: transform 0.3s ease, font-size 0.3s ease; /* Makes the growth smooth */
+                    z-index: 20;
                 }
 
         #noBtn {
@@ -75,13 +160,38 @@
             position: absolute; /* Essential for movement */
             /* THE MAGIC LINE: This creates the glide effect */
             left: calc(50% + 60px);
-            transition: all 0.3s ease-out; 
+            /* transition: all 0.3s ease-out; */
+            transition: left 0.3s ease-out, top 0.3s ease-out;
             z-index: 10;
         }
     </style>
 </head>
+
+
 <body>
 
+    
+    <div id="success-page">
+        <div class="image-wrapper">
+            <div class="sparkle" style="top: -10%; left: -10%; animation-delay: 0s;"></div>
+            <div class="sparkle" style="top: 10%; right: -10%; animation-delay: 0.5s;"></div>
+            <div class="sparkle" style="bottom: 10%; left: -15%; animation-delay: 0.8s;"></div>
+            <div class="sparkle" style="bottom: -5%; right: 0%; animation-delay: 1.2s;"></div>
+            <div class="sparkle" style="top: 50%; left: -20%; animation-delay: 0.3s;"></div>    
+        
+            <img id="successImage" src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWZ1bXhqbjI3NmM4b3VlMXc2MmwwcmE3M2theWJ4dDN5MnNvcTk2cSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/TKL99l61UBNnnQSx4o/giphy.gif" alt="Happy GIF">
+        </div>   
+        <div class="success-message">
+            The contract has been signed!<br>
+            End date extended to August 31st.<br>
+            Happy Valentine's Day! ❤️
+        </div>
+    </div>
+    
+    <div class="image-container">
+        <img id="mainImage" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzFrcXg5ZGpzNnRiMXgwYmprM296Mmh2d2UxaThraGhod3d6OGo2cCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/8QbwUh40Hl96yMgvOx/giphy.gif" alt="Question GIF">
+    </div>
+             
     <h1 class="waviy" id="question">Will you be my Valentine?</h1>
 
     <div class="btn-container">
@@ -91,11 +201,42 @@
 
     <script>
         const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const questionText = document.getElementById('question');
+        
+        let mobileNoCount = 0; // Only for text prompts on touch
+        let globalGrowCount = 0; // For button size on both PC and Mobile
+        
+        const maxNoClicks = 5;
+
+        const phrases = [
+            "Will you be my Valentine?",
+            "REALLY !?  AGAIN will you be my Valentine?",
+            "Okay !! You are kidding me. One more time !",
+            "Please, Be my valentine.",
+            "Don't do this to me... Be my Valentine.",
+            "Final chance... !!! Will you be my Valentine?"
+        ];
 
         const moveButton = (e) => {
-            // 1. Get the padding/buffer you want from the edge (e.g., 20px)
-            if (e && e.type === 'touchstart') e.preventDefault();
+            const isTouch = e.type === 'touchstart';
+            
+            if (isTouch) {
+                e.preventDefault(); // Stop iPhone from clicking
+                mobileNoCount++;
+                // Update text prompts ONLY on mobile
+                if (mobileNoCount <= maxAttempts) {
+                    const newText = phrases[mobileNoCount];
+                    applyWavyText(newText);
+                }
+            }
 
+            // Always grow the button, whether Mouse or Touch
+            globalGrowCount++;
+            const scale = 1 + (globalGrowCount * 0.2); 
+            yesBtn.style.transform = `scale(${scale})`;
+            yesBtn.style.zIndex = 20 + globalGrowCount;
+            
             const buffer = 50;
 
             // 2. Calculate the available width and height
@@ -111,13 +252,41 @@
             // 4. Apply the new coordinates
             noBtn.style.left = `${randomX}px`;
             noBtn.style.top = `${randomY}px`;
-            };
+        };
+        
+        function updatePage() {
+            // 1. Update the text
+            // We clear the wave and re-run the wave logic
+            const newText = phrases[noCount] || phrases[phrases.length - 1];
+            applyWavyText(newText);
+
+            // 2. Make the Yes button bigger (1.2x, 1.4x, etc.)
+            const scale = 1 + (noCount * 0.2); 
+            yesBtn.style.transform = `scale(${scale})`;
+    
+           // Optional: make it harder to miss by increasing z-index
+            yesBtn.style.zIndex = 20 + noCount;
+        }
+
+        // Function to handle the Papyrus wavy text
+        function applyWavyText(str) {
+            questionText.innerHTML = ""; // Clear existing
+            str.split("").forEach((char, i) => {
+                const span = document.createElement('span');
+                span.innerText = char === " " ? "\u00A0" : char;
+                span.style.setProperty('--i', i);
+                questionText.appendChild(span);
+            });
+        }
+
+        // Initial run for the first question
+        applyWavyText(phrases[0]);
 
         noBtn.addEventListener('mouseover', moveButton);
-        noBtn.addEventListener('touchstart', moveButton); 
-        
+        noBtn.addEventListener('touchstart', moveButton);
+
         function celebrate() {
-            alert("Victory! I'll pick you up at 8! 🌹");
+            document.getElementById('success-page').style.display = 'flex';
         }
 
         const text = document.getElementById('question');
