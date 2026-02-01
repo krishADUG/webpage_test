@@ -132,6 +132,11 @@
             }
         }
         
+        .small-text {
+            font-size: 1.0rem !important; /* Adjust this to make it as small as you like */
+            opacity: 0.8; /* Makes it look like a sub-caption */
+        }
+
         h1 { color: #880e4f; margin-bottom: 50px; }
 
         .btn-container {
@@ -149,12 +154,15 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        #yesBtn {   background-color: #4CAF50; 
-                    color: white; 
-                    margin-right: 150px;
-                    transition: transform 0.3s ease, font-size 0.3s ease; /* Makes the growth smooth */
-                    z-index: 20;
-                }
+        #yesBtn {
+            background-color: #4CAF50; 
+            color: white; 
+            margin-right: 150px;
+            /* Use transitions for padding and font-size for the 'rearrange' effect */
+            transition: padding 0.3s ease, font-size 0.3s ease; 
+            z-index: 20;
+            white-space: nowrap; /* Prevents the text from wrapping as it grows */
+        }
 
         #noBtn {
             background-color: #f44336;
@@ -202,27 +210,79 @@
     </div>
 
     <script>
+        let didClickNo = false;
+        
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
         const questionText = document.getElementById('question');
         
         let mobileNoCount = 0; // Only for text prompts on touch
         let globalGrowCount = 0; // For button size on both PC and Mobile
-        
-        const maxNoClicks = 5;
+        let noClickCount = 0;
+        const maxNoClicks = 10;
 
+        const sadImages = [
+            "loki1.jpg", 
+            "loki2.jpg", 
+            "loki3.jpg"
+        ];
+        const phrasesNO = [
+            "Maybe my Valentine?",
+            "Are you heartless?",
+            "Seriously last chance,<br>be my valentine.",
+        ];
         const phrases = [
             "Will you be my Valentine?",
             "REALLY !?..<br>AGAIN will you be my Valentine?",
             "Okay !!<br>You are kidding me. <br> One more time !",
             "Please...<br>Be my valentine.",
             "Don't do this to me...<br>Be my Valentine.",
-            "Final chance... !!!<br>Will you be my Valentine?"
+            "Final chance... !!!<br>Will you be my Valentine?",
+            "Are you heartless?<br>Click Yes already! 🥺",
+            "I'm going to start crying...<br>REALLY! 😭",
+            "My lawyer will hear about this!<br>BE MINE! ⚖️",
+            "You're doing this on purpose now...<br>RIGHT?? 😠",
+            "I can do this all day.<br>CHOOSE YES! 😤"
         ];
 
+        noBtn.addEventListener('click', () => {
+            didClickNo = true;
+            // This runs ONLY if they actually manage to click it (mostly PC)
+    
+            // 1. Change the GIF to the sad image
+            const currentImg = sadImages[noClickCount] || sadImages[sadImages.length - 1];
+            document.getElementById('mainImage').src = currentImg;
+
+            // 2. Reset the growth counter and button styles
+            globalGrowCount = 0;
+            yesBtn.style.padding = "15px 35px";
+            yesBtn.style.fontSize = "1.5rem";
+
+            // 3. Reset the text to the original question
+            const currentNoPhrase = phrasesNO[noClickCount] || phrasesNO[phrasesNO.length - 1];
+            applyWavyTextSmall(currentNoPhrase);
+
+            noClickCount++;
+            
+            if (noClickCount >= 3) {
+                // Hides the button from the layout
+                noBtn.style.display = "none"; 
+        
+                 // Optional: Center the Yes button since it's now alone
+                yesBtn.style.marginRight = "0"; 
+        
+                 // Change the text to be even more demanding
+                applyWavyTextSmall("No more hiding!<br>Say Yes! ❤️");
+            } else {
+                // Only reset position if the button still exists
+                noBtn.style.left = "calc(50% + 60px)";
+                noBtn.style.top = "auto"; 
+            }    
+        });
+        
         const moveButton = (e) => {
             const isTouch = e.type === 'touchstart';
-            
+            didClickNo = true;
             if (isTouch) {
                 e.preventDefault(); // Stop iPhone from clicking
                 mobileNoCount++;
@@ -235,9 +295,12 @@
 
             // Always grow the button, whether Mouse or Touch
             globalGrowCount++;
-            const scale = 1 + (globalGrowCount * 0.2); 
-            yesBtn.style.transform = `scale(${scale})`;
-            yesBtn.style.zIndex = 20 + globalGrowCount;
+            const newPaddingVertical = 15 + (globalGrowCount * 5);
+            const newPaddingHorizontal = 35 + (globalGrowCount * 10);
+            const newFontSize = 1.5 + (globalGrowCount * 0.2); // starting at 1.5rem
+
+            yesBtn.style.padding = `${newPaddingVertical}px ${newPaddingHorizontal}px`;
+            yesBtn.style.fontSize = `${newFontSize}rem`;
             
             const buffer = 50;
 
@@ -289,6 +352,37 @@
             });
         }
 
+        function applyWavyTextSmall(str) {
+             if (!str) return;
+            questionText.innerHTML = ""; 
+
+            // Split by <br> to handle multiple lines
+            const lines = str.split("<br>");
+
+            lines.forEach((line, lineIndex) => {
+            // Create a wrapper for the line to help with spacing
+                const lineDiv = document.createElement('div');
+                lineDiv.style.display = "block";
+
+                line.split("").forEach((char, i) => {
+                    const span = document.createElement('span');
+                    span.innerText = char === " " ? "\u00A0" : char;
+            
+                    // Apply the wave delay
+                    span.style.setProperty('--i', i + (lineIndex * 10));
+
+                    // NEW: If it's the 2nd or 3rd line, make it smaller
+                    if (lineIndex > 0) {
+                        span.classList.add('small-text');
+                    }
+
+                    lineDiv.appendChild(span);
+                });
+
+                questionText.appendChild(lineDiv);
+            });
+        }   
+
         // Initial run for the first question
         applyWavyText(phrases[0]);
 
@@ -296,6 +390,21 @@
         noBtn.addEventListener('touchstart', moveButton, {passive: false});
 
         function celebrate() {
+            const messageElement = document.querySelector('#success-page .success-message');
+            
+            if (didClickNo) {
+                messageElement.innerHTML = 
+                    "Finally! I knew you'd give in eventually! ❤️<br>" +
+                    "Your contract with my DAD has been<br>" +
+                    "extended to August end.<br>" +
+                    "Happy Valentine's Day!";
+            } else {
+                messageElement.innerHTML = 
+                    "The contract has been signed!<br>" +
+                    "End date extended to August end<br>" +
+                    "Happy Valentine's Day! ❤️";
+            }
+
             document.getElementById('success-page').style.display = 'flex';
         }
 
