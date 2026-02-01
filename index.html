@@ -246,6 +246,7 @@
         ];
 
         noBtn.addEventListener('click', () => {
+            if (e.pointerType === 'touch') return;
             didClickNo = true;
             // This runs ONLY if they actually manage to click it (mostly PC)
     
