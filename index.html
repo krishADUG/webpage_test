@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Gliding No</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fce4ec; /* Soft pink background */
+            overflow: hidden
+        }
+
+        /* The container for our waving letters */
+        .waviy {
+            position: relative;
+            margin-bottom: 50px;
+        }   
+
+        /* Individual letter styling */
+        .waviy span {
+            font-family: "Papyrus", "ITC Papyrus", "Comic Sans MS", cursive;
+            font-size: 3.5rem; /* Papyrus can run a bit small, so I bumped the size */
+            font-weight: bold;
+            position: relative;
+            display: inline-block;
+            color: #880e4f;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: wave 2s infinite;
+        /* This 'delay' is the secret—it makes the letters follow each other */
+            animation-delay: calc(.1s * var(--i));
+        }
+
+        /* The actual "Wave" motion */
+        @keyframes wave {
+            0%, 40%, 100% {
+                transform: translateY(0);
+            }
+            20% {
+                transform: translateY(-20px); /* How high the letters jump */
+            }
+        }
+        
+        h1 { color: #880e4f; margin-bottom: 50px; }
+
+        .btn-container {
+            position: static; 
+            display: flex;
+            gap: 20px;
+        }
+
+        button {
+            padding: 15px 35px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 50px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        #yesBtn { background-color: #4CAF50; 
+                  color: white; 
+                  position: absolute; 
+                  right: calc(50% + 60px);
+                }
+
+        #noBtn {
+            background-color: #f44336;
+            color: white;
+            position: absolute; /* Essential for movement */
+            /* THE MAGIC LINE: This creates the glide effect */
+            left: calc(50% + 60px);
+            transition: all 0.3s ease-out; 
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="waviy" id="question">Will you be my Valentine?</h1>
+
+    <div class="btn-container">
+        <button id="yesBtn" onclick="celebrate()">Yes</button>
+        <button id="noBtn">No</button>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+
+        const moveButton = (e) => {
+            // 1. Get the padding/buffer you want from the edge (e.g., 20px)
+            if (e && e.type === 'touchstart') e.preventDefault();
+
+            const buffer = 50;
+
+            // 2. Calculate the available width and height
+            // window.innerWidth is the total width
+            // noBtn.clientWidth is the button's width
+            const maxX = window.innerWidth - noBtn.clientWidth - buffer;
+            const maxY = window.innerHeight - noBtn.clientHeight - buffer;
+
+            // Generate random numbers within the safe range [buffer, max]
+            const randomX = Math.floor(Math.random() * (maxX - buffer)) + buffer;
+            const randomY = Math.floor(Math.random() * (maxY - buffer)) + buffer;
+
+            // 4. Apply the new coordinates
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+            };
+
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', moveButton); 
+        
+        function celebrate() {
+            alert("Victory! I'll pick you up at 8! 🌹");
+        }
+
+        const text = document.getElementById('question');
+        const letters = text.innerText.split(""); // Splits "Hello" into ["H", "e", "l", "l", "o"]
+
+        text.innerText = ""; // Clear the original text
+
+        // Loop through each letter and wrap it in a span with an index (--i)
+        letters.forEach((char, i) => {
+            const span = document.createElement('span');
+            span.innerText = char === " " ? "\u00A0" : char; // Keep spaces as spaces
+            span.style.setProperty('--i', i); // This tells CSS which letter it is
+            text.appendChild(span);
+        });
+    </script>
+</body>
+</html>
