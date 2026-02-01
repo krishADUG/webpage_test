@@ -103,13 +103,15 @@
         /* The container for our waving letters */
         .waviy {
             position: relative;
-            margin-bottom: 50px;
+            margin-bottom: 30px; /* Reduced margin to make room for extra lines */
+            text-align: center;
+            line-height: 1.2; /* Ensures lines aren't too far apart */
         }   
 
         /* Individual letter styling */
         .waviy span {
             font-family: "Papyrus", "ITC Papyrus", "Comic Sans MS", cursive;
-            font-size: 3.5rem; /* Papyrus can run a bit small, so I bumped the size */
+            font-size: 3.0rem; /* Papyrus can run a bit small, so I bumped the size */
             font-weight: bold;
             position: relative;
             display: inline-block;
@@ -212,10 +214,10 @@
         const phrases = [
             "Will you be my Valentine?",
             "REALLY !?..<br>AGAIN will you be my Valentine?",
-            "Okay !! <br> You are kidding me. <br> One more time !",
-            "Please... <br> Be my valentine.",
-            "Don't do this to me... <br> Be my Valentine.",
-            "Final chance... !!! <br> Will you be my Valentine?"
+            "Okay !!<br>You are kidding me. <br> One more time !",
+            "Please...<br>Be my valentine.",
+            "Don't do this to me...<br>Be my Valentine.",
+            "Final chance... !!!<br>Will you be my Valentine?"
         ];
 
         const moveButton = (e) => {
@@ -271,11 +273,19 @@
         // Function to handle the Papyrus wavy text
         function applyWavyText(str) { 
             questionText.innerHTML = ""; // Clear existing
-            str.split("").forEach((char, i) => {
-                const span = document.createElement('span');
-                span.innerText = char === " " ? "\u00A0" : char;
-                span.style.setProperty('--i', i);
-                questionText.appendChild(span);
+
+            const lines = str.split("<br>");
+            lines.forEach((line, lineIndex) => {
+                line.split("").forEach((char, i) => {
+                    const span = document.createElement('span');
+                    span.innerText = char === " " ? "\u00A0" : char;
+                    span.style.setProperty('--i', i + lineIndex * 10); // Offset index for new lines
+                    questionText.appendChild(span);
+                });
+                
+                if (lineIndex < lines.length - 1) {
+                    questionText.appendChild(document.createElement('br'));
+                }
             });
         }
 
