@@ -219,7 +219,7 @@
         let mobileNoCount = 0; // Only for text prompts on touch
         let globalGrowCount = 0; // For button size on both PC and Mobile
         let noClickCount = 0;
-        const maxNoClicks = 10;
+        const maxNoClicks = 5;
 
         const sadImages = [
             "loki1.jpg", 
@@ -238,11 +238,11 @@
             "Please...<br>Be my valentine.",
             "Don't do this to me...<br>Be my Valentine.",
             "Final chance... !!!<br>Will you be my Valentine?",
-            "Are you heartless?<br>Click Yes already! 🥺",
-            "I'm going to start crying...<br>REALLY! 😭",
-            "My lawyer will hear about this!<br>BE MINE! ⚖️",
-            "You're doing this on purpose now...<br>RIGHT?? 😠",
-            "I can do this all day.<br>CHOOSE YES! 😤"
+            "Are you heartless?<br>Click Yes already!",
+            "I'm going to start crying...<br>REALLY!",
+            "My lawyer will hear about this!<br>BE MINE!",
+            "You're doing this on purpose now...<br>RIGHT??",
+            "I can do this all day.<br>CHOOSE YES!"
         ];
 
         noBtn.addEventListener('click', () => {
@@ -282,9 +282,10 @@
         
         const moveButton = (e) => {
             const isTouch = e.type === 'touchstart';
-            didClickNo = true;
+            
             if (isTouch) {
                 e.preventDefault(); // Stop iPhone from clicking
+                didClickNo = true;
                 mobileNoCount++;
                 // Update text prompts ONLY on mobile
                 if (mobileNoCount <= maxNoClicks) {
