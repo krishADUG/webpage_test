@@ -225,7 +225,7 @@
                 e.preventDefault(); // Stop iPhone from clicking
                 mobileNoCount++;
                 // Update text prompts ONLY on mobile
-                if (mobileNoCount <= maxAttempts) {
+                if (mobileNoCount <= maxNoClicks) {
                     const newText = phrases[mobileNoCount];
                     applyWavyText(newText);
                 }
@@ -269,7 +269,7 @@
         }
 
         // Function to handle the Papyrus wavy text
-        function applyWavyText(str) {
+        function applyWavyText(str) { 
             questionText.innerHTML = ""; // Clear existing
             str.split("").forEach((char, i) => {
                 const span = document.createElement('span');
@@ -283,7 +283,7 @@
         applyWavyText(phrases[0]);
 
         noBtn.addEventListener('mouseover', moveButton);
-        noBtn.addEventListener('touchstart', moveButton);
+        noBtn.addEventListener('touchstart', moveButton, {passive: false});
 
         function celebrate() {
             document.getElementById('success-page').style.display = 'flex';
