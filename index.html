@@ -210,12 +210,14 @@
         const sadImages = [
             "loki1.jpg", 
             "loki2.jpg", 
-            "loki3.jpg"
+            "loki3.jpg",
+            "loki4.jpg"
         ];
         const phrasesNO = [
             "Maybe my Valentine?",
-            "Really!!<br>Are you heartless?",
+            "You are heartless!!..<br>Will you be my Valentine?",
             "Seriously last chance,<br>be my valentine.",
+            "No more hiding!<br>Say Yes! ❤️",
         ];
         const phrases = [
             "Will you be my Valentine?",
@@ -232,25 +234,9 @@
         ];
 
         noBtn.addEventListener('click', (e) => {
-            if (Date.now() - lastTouchTime < 500) return;
-            
-            didClickNo = true;
-            // This runs ONLY if they actually manage to click it (mostly PC)
-    
-            // 1. Change the GIF to the sad image
-            const currentImg = sadImages[noClickCount] || sadImages[sadImages.length - 1];
-            document.getElementById('mainImage').src = currentImg;
+            if (e.pointerType === 'touch') return;
 
-            // 2. Reset the growth counter and button styles
-            globalGrowCount = 0;
-            yesBtn.style.padding = "15px 35px";
-            yesBtn.style.fontSize = "1.5rem";
-
-            // 3. Reset the text to the original question
-            const currentNoPhrase = phrasesNO[noClickCount] || phrasesNO[phrasesNO.length - 1];
-            applyWavyTextSmall(currentNoPhrase);
-
-            noClickCount++;
+            if (Date.now() - lastTouchTime < 1000) return;
             
             if (noClickCount >= 3) {
                 // Hides the button from the layout
@@ -260,12 +246,30 @@
                 yesBtn.style.marginRight = "0"; 
         
                  // Change the text to be even more demanding
-                applyWavyTextSmall("No more hiding!<br>Say Yes! ❤️");
-            } else {
-                // Only reset position if the button still exists
-                noBtn.style.left = "calc(50% + 60px)";
-                noBtn.style.top = "auto"; 
-            }    
+                document.getElementById('mainImage').src = sadImages[noClickCount];
+                applyWavyText(phrasesNO[noClickCount]);
+            }
+
+            didClickNo = true;
+            // This runs ONLY if they actually manage to click it (mostly PC)
+    
+            // 1. Change the GIF to the sad image
+            document.getElementById('mainImage').src = sadImages[noClickCount];
+            applyWavyText(phrasesNO[noClickCount]);
+            // 2. Reset the growth counter and button styles
+            globalGrowCount = 0;
+            yesBtn.style.padding = "15px 35px";
+            yesBtn.style.fontSize = "1.5rem";
+
+            // 3. Reset the text to the original question
+            noBtn.style.left = "calc(50% + 60px)";
+            noBtn.style.top = "auto"; 
+
+            noClickCount++;
+            
+            // Only reset position if the button still exists
+            
+                
         });
         
         // --- MOBILE/HOVER LOGIC (Glide Path) ---
